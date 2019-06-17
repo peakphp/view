@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Peak\View;
 
+use Peak\View\Presentation\PresentationInterface;
+
 interface ViewInterface
 {
     /**
@@ -28,4 +30,27 @@ interface ViewInterface
      * @return array
      */
     public function getVars(): array;
+
+    /**
+     * @param array $vars
+     * @return mixed
+     */
+    public function setVars(array $vars);
+
+    /**
+     * @param array $vars
+     * @return mixed
+     */
+    public function addVars(array $vars);
+
+    /**
+     * @return PresentationInterface|null
+     */
+    public function getPresentation(): ?PresentationInterface;
+
+    /**
+     * @param PresentationInterface $presentation
+     * @return mixed
+     */
+    public function setPresentation(PresentationInterface $presentation);
 }

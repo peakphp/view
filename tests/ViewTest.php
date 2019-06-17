@@ -18,6 +18,12 @@ class ViewTest extends TestCase
         $this->assertTrue($view->getPresentation() instanceof PresentationInterface);
     }
 
+    public function testBasic2()
+    {
+        $view = new View();
+        $this->assertTrue($view->getPresentation() === null);
+    }
+
     public function testGetVars()
     {
         $view = new View(['test' => 'foobar'], $this->createMock(PresentationInterface::class));
@@ -104,10 +110,17 @@ class ViewTest extends TestCase
 
     public function testRenderFail()
     {
-        $this->expectException(\Peak\View\Exception\FileNotFoundException::class);
+        $this->expectException(\Peak\View\Exception\RenderException::class);
         $view = new View([],
             new Presentation(['/layout.php' => ['/unknown.php']], FIXTURES_PATH . '/scripts')
         );
+        $view->render();
+    }
+
+    public function testRenderFail2()
+    {
+        $this->expectException(\Peak\View\Exception\RenderException::class);
+        $view = new View();
         $view->render();
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Peak\View;
 
+use Peak\View\Exception\RenderException;
+use Peak\View\Exception\VarNotFoundException;
 use Peak\View\Presentation\PresentationInterface;
 use Peak\Common\Traits\Macro;
-use Peak\View\Exception\FileNotFoundException;
-use Peak\View\Exception\VarNotFoundException;
 
 use function array_key_exists;
 use function call_user_func_array;
@@ -50,14 +50,16 @@ class View implements ViewInterface
     /**
      * View constructor.
      * @param array|null $vars
-     * @param PresentationInterface $presentation
+     * @param PresentationInterface|null $presentation
      */
-    public function __construct(?array $vars, PresentationInterface $presentation)
+    public function __construct(array $vars = null, PresentationInterface $presentation = null)
     {
         if (isset($vars)) {
             $this->vars = $vars;
         }
-        $this->presentation = $presentation;
+        if (isset($presentation)) {
+            $this->presentation = $presentation;
+        }
     }
 
     /**
@@ -92,11 +94,41 @@ class View implements ViewInterface
     }
 
     /**
+     * @param array $vars
+     * @return mixed
+     */
+    public function setVars(array $vars)
+    {
+        $this->vars = $vars;
+        return $this;
+    }
+
+    /**
+     * @param array $vars
+     * @return mixed
+     */
+    public function addVars(array $vars)
+    {
+        $this->vars = array_merge($this->vars, $vars);
+        return $this;
+    }
+
+    /**
      * @return PresentationInterface
      */
-    public function getPresentation(): PresentationInterface
+    public function getPresentation(): ?PresentationInterface
     {
         return $this->presentation;
+    }
+
+    /**
+     * @param PresentationInterface $presentation
+     * @return $this
+     */
+    public function setPresentation(PresentationInterface $presentation)
+    {
+        $this->presentation = $presentation;
+        return $this;
     }
 
     /**
@@ -127,11 +159,14 @@ class View implements ViewInterface
     }
 
     /**
-     * @return string|false
-     * @throws FileNotFoundException
+     * @return false|string
+     * @throws RenderException
      */
     public function render()
     {
+        if (!isset($this->presentation)) {
+            throw new RenderException('View has no Presentation to render');
+        }
         $this->obN++;
         ob_start();
         $this->recursiveRender($this->presentation->getSources());
@@ -141,7 +176,7 @@ class View implements ViewInterface
 
     /**
      * @param array $templateSources
-     * @throws FileNotFoundException
+     * @throws RenderException
      */
     protected function recursiveRender(array $templateSources)
     {
@@ -162,7 +197,7 @@ class View implements ViewInterface
 
     /**
      * @param string $file
-     * @throws FileNotFoundException
+     * @throws RenderException
      */
     protected function renderFile(string $file)
     {
@@ -172,8 +207,10 @@ class View implements ViewInterface
                 ob_end_clean();
                 $this->obN--;
             }
-            throw new FileNotFoundException($file);
+            throw new RenderException('View file '.$file.' not found');
         }
         include $file;
     }
+
+
 }
