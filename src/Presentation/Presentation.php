@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Peak\View;
+namespace Peak\View\Presentation;
 
 use function is_array;
 
-class Presentation implements \Peak\Blueprint\View\Presentation
+class Presentation implements PresentationInterface
 {
     /**
      * @var array

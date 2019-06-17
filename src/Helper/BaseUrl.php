@@ -113,12 +113,11 @@ class BaseUrl
     {
         $host = null;
         if ($useForwardedHost && isset($this->server['HTTP_X_FORWARDED_HOST'])) {
-            $host = $this->server['HTTP_X_FORWARDED_HOST'];
+            return $this->server['HTTP_X_FORWARDED_HOST'];
         } elseif (isset($this->server['HTTP_HOST'])) {
-            $host = $this->server['HTTP_HOST'];
-
+            return $this->server['HTTP_HOST'];
         } elseif (isset($this->server['HOST'])) {
-            $host = $this->server['HOST'];
+            return $this->server['HOST'];
         }
         return $host;
     }

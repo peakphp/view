@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Peak\View;
 
-use Peak\Blueprint\View\Presentation;
+use Peak\View\Presentation\PresentationInterface;
 use Peak\Common\Traits\Macro;
 use Peak\View\Exception\FileNotFoundException;
 use Peak\View\Exception\VarNotFoundException;
@@ -18,7 +18,7 @@ use function ob_start;
 use function ob_get_clean;
 
 
-class View implements \Peak\Blueprint\View\View
+class View implements ViewInterface
 {
     use Macro;
 
@@ -38,7 +38,7 @@ class View implements \Peak\Blueprint\View\View
     protected $layoutContent;
 
     /**
-     * @var Presentation
+     * @var PresentationInterface
      */
     protected $presentation;
 
@@ -50,9 +50,9 @@ class View implements \Peak\Blueprint\View\View
     /**
      * View constructor.
      * @param array|null $vars
-     * @param Presentation $presentation
+     * @param PresentationInterface $presentation
      */
-    public function __construct(?array $vars, Presentation $presentation)
+    public function __construct(?array $vars, PresentationInterface $presentation)
     {
         if (isset($vars)) {
             $this->vars = $vars;
@@ -92,9 +92,9 @@ class View implements \Peak\Blueprint\View\View
     }
 
     /**
-     * @return Presentation
+     * @return PresentationInterface
      */
-    public function getPresentation()
+    public function getPresentation(): PresentationInterface
     {
         return $this->presentation;
     }
