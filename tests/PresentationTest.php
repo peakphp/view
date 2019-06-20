@@ -3,6 +3,8 @@
 use \PHPUnit\Framework\TestCase;
 
 use Peak\View\Presentation\Presentation;
+use Peak\View\Presentation\SingleLayoutPresentation;
+use Peak\View\Presentation\SinglePresentation;
 
 class PresentationTest extends TestCase
 {
@@ -47,5 +49,17 @@ class PresentationTest extends TestCase
 
         $presentation = new Presentation($scripts, __DIR__);
         $this->assertTrue($presentation->getSources() === $scriptsWithPath);
+    }
+
+    public function testSingleLayoutPresentation()
+    {
+        $presentation = new SingleLayoutPresentation('layout', 'script');
+        $this->assertTrue($presentation->getSources() === ['layout' => ['script']]);
+    }
+
+    public function testSinglePresentation()
+    {
+        $presentation = new SinglePresentation('script');
+        $this->assertTrue($presentation->getSources() === ['script']);
     }
 }
