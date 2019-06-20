@@ -18,9 +18,17 @@ See https://peakphp.github.io/docs/view
 <?php
 
 $vars = ['foo' => 'bar'];
-$presentation = new SingleLayoutPresentation('/path/to/layout.php', '/path/to/script.php');
+
+$presentation = new SingleLayoutPresentation(
+    '/path/to/layout.php', 
+    '/path/to/script.php'
+);
+
 $view = new View($vars, $presentation);
+
 $content = $view->render();
+
+// ...
 ```
 
 layout.php
