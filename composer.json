@@ -1,7 +1,7 @@
 {
     "name": "peak/view",
-    "description": "Database generic tooling + Laravel database wrapper + database migration with Phinx",
-    "keywords": ["peak", "database", "migrations", "laravel", "phinx", "tools"],
+    "description": "PHP minimalist view template engine with macros and helpers.",
+    "keywords": ["peak", "view", "template", "macro"],
     "license": "MIT",
     "type": "library",
     "support": {
