@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Peak\View\Helper;
+namespace Peak\View\Helper\Text;
 
 use function min;
 use function preg_replace;
@@ -10,7 +10,7 @@ use function round;
 use function strlen;
 use function substr;
 
-class TextTruncate
+class Truncate
 {
     /**
      * Truncate a string to a certain length if necessary, optionally splitting in the
