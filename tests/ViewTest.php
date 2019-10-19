@@ -123,4 +123,64 @@ class ViewTest extends TestCase
         $view = new View();
         $view->render();
     }
+
+    public function testHasAndSetHelper()
+    {
+        $view = new View();
+        $view->setHelper('test', new ViewHelperA());
+        $this->assertTrue($view->hasHelper('test'));
+        $this->assertFalse($view->hasHelper('test2'));
+    }
+
+    public function testRenderWithChildren()
+    {
+        $view = new View(
+            [
+                'name' => 'foo'
+            ],
+            new Presentation(['/layout2.php' => ['/profile2.php']], FIXTURES_PATH.'/scripts')
+        );
+        $content = $view->render();
+        $this->assertTrue($content === '<div class="content"><h1>Profile of foo</h1><h1>child1 of foo</h1><h1>child2 of foo and bob</h1><h1>orphan1 of foobar</h1></div>');
+    }
+
+    public function testRenderWithDirectives1()
+    {
+        $view = new View([
+            'name' => 'foo',
+            'profile' => [
+                'email' => 'bar@bar.foo'
+            ]
+        ], new Presentation(['/directives1.php'], FIXTURES_PATH.'/scripts'));
+
+        $view->setDirectives([
+            new \Peak\View\Directive\EchoDirective()
+        ]);
+
+        $content = $view->render();
+        $this->assertTrue($content === '<h1>Directives</h1><h2>foo</h2><h3>bar@bar.foo</h3>');
+    }
+
+    public function testRenderWithDirectives2()
+    {
+        $view = new View([
+            'name' => 'foo',
+            'profile' => [
+                'email' => 'bar@bar.foo'
+            ]
+        ], new Presentation(['/directives2.php'], FIXTURES_PATH.'/scripts'));
+
+        $view
+            ->setHelpers([
+                'testHelper' => new ViewHelperA(),
+            ])
+            ->setDirectives([
+                new \Peak\View\Directive\EchoDirective(),
+                new \Peak\View\Directive\FnDirective()
+            ]);
+
+        $content = $view->render();
+        echo $content;
+        $this->assertTrue($content === '<h1>Directives</h1><h2>foo</h2><h3>1</h3><h4>'.date('Y').'</h4><h5>Hello you!</h5>');
+    }
 }
