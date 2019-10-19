@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Peak\View;
 
+use Peak\View\Directive\DirectiveInterface;
 use Peak\View\Exception\RenderException;
 use Peak\View\Exception\VarNotFoundException;
 use Peak\View\Presentation\PresentationInterface;
-use Peak\Common\Traits\Macro;
+use Peak\View\Presentation\SinglePresentation;
+use \Closure;
+use \RuntimeException;
 
 use function array_key_exists;
 use function call_user_func_array;
@@ -20,17 +23,25 @@ use function ob_get_clean;
 
 class View implements ViewInterface
 {
-    use Macro;
-
     /**
      * @var array
      */
     protected $vars = [];
 
     /**
-     * @var array
+     * @var array<string, callable>
      */
     protected $helpers = [];
+
+    /**
+     * @var array<string, closure>
+     */
+    private $macros = [];
+
+    /**
+     * @var array<DirectiveInterface>
+     */
+    private $directives = [];
 
     /**
      * @var string|false
@@ -86,6 +97,28 @@ class View implements ViewInterface
     }
 
     /**
+     * @param string $path
+     * @param null $default
+     * @return array|mixed|null
+     */
+    public function getVar(string $path, $default = null)
+    {
+        $array = $this->vars;
+
+        if (!empty($path)) {
+            $keys = explode('.', $path);
+            foreach ($keys as $key) {
+                if (!array_key_exists($key, $array)) {
+                    return $default;
+                }
+                $array = $array[$key];
+            }
+        }
+
+        return $array;
+    }
+
+    /**
      * @return array
      */
     public function getVars(): array
@@ -132,12 +165,22 @@ class View implements ViewInterface
     }
 
     /**
+     * @param array $directives
+     * @return $this
+     */
+    public function setDirectives(array $directives)
+    {
+        $this->directives = $directives;
+        return $this;
+    }
+
+    /**
      * Call a macro or helper in that order
      *
      * @param string $method
      * @param array $args
      * @return mixed
-     * @throw \RuntimeException
+     * @throw RuntimeException
      */
     public function __call(string $method, array $args)
     {
@@ -147,15 +190,71 @@ class View implements ViewInterface
             return call_user_func_array($this->helpers[$method], $args);
         }
 
-        throw new \RuntimeException('No macro or helper found for "'.$method.'"');
+        throw new RuntimeException('No macro or helper found for "'.$method.'"');
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasHelper(string $name): bool
+    {
+        return array_key_exists($name, $this->helpers);
+    }
+
+    /**
+     * @param string $name
+     * @param callable $helper
+     * @return $this
+     */
+    public function setHelper(string $name, Callable $helper)
+    {
+        $this->helpers[$name] = $helper;
+        return $this;
     }
 
     /**
      * @param array $helpers
+     * @return $this
      */
     public function setHelpers(array $helpers)
     {
         $this->helpers = $helpers;
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param Closure $macroCallable
+     * @return $this
+     */
+    public function setMacro(string $name, Closure $macroCallable)
+    {
+        $this->macros[$name] = Closure::bind($macroCallable, $this, get_class());
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasMacro(string $name)
+    {
+        return isset($this->macros[$name]);
+    }
+
+    /**
+     * Call a macro
+     * @param string $name
+     * @param array $args
+     * @return mixed
+     */
+    public function callMacro(string $name, array $args)
+    {
+        if (isset($this->macros[$name])) {
+            return call_user_func_array($this->macros[$name], $args);
+        }
+        throw new RuntimeException('There is no macro with the given name "'.$name.'" to call');
     }
 
     /**
@@ -171,7 +270,79 @@ class View implements ViewInterface
         ob_start();
         $this->recursiveRender($this->presentation->getSources());
         $this->obN--;
-        return ob_get_clean();
+        return $this->compileDirectives(ob_get_clean());
+    }
+
+    /**
+     * @param string $content
+     * @return string|string[]|null
+     */
+    public function compileDirectives(string $content)
+    {
+        foreach ($this->directives as $directive) {
+            $content = $directive->compile($this, $content);
+        }
+        return $content;
+    }
+
+    /**
+     * @param string $filename
+     * @param array $vars
+     * @return false|string
+     */
+    public function renderOrphan(string $filename, array $vars = [])
+    {
+        $view = clone $this;
+        $view->setVars($vars);
+        try {
+            $view->setPresentation(new SinglePresentation($filename));
+            return $view->render();
+        } catch(RenderException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * @param array $filenames
+     * @param array $vars
+     * @return string
+     */
+    public function renderOrphans(array $filenames, array $vars = [])
+    {
+        $content = [];
+        foreach ($filenames as $filename) {
+            $content[] = $this->renderOrphan($filename, $vars);
+        }
+        return implode('', $content);
+    }
+
+    /**
+     * @param string $filename
+     * @param array $vars
+     * @return false|string
+     * @throws RenderException
+     */
+    public function renderChild(string $filename, array $vars = [])
+    {
+        $view = clone $this;
+        $view->addVars($vars);
+        $view->setPresentation(new SinglePresentation( $filename));
+        return $view->render();
+    }
+
+    /**
+     * @param array $filenames
+     * @param array $vars
+     * @return string
+     * @throws RenderException
+     */
+    public function renderChildren(array $filenames, array $vars = [])
+    {
+        $content = [];
+        foreach ($filenames as $filename) {
+            $content[] = $this->renderChild($filename, $vars);
+        }
+        return implode('', $content);
     }
 
     /**
