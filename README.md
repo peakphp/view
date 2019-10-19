@@ -108,7 +108,7 @@ and finally, you'll be able to use your helper the same way you use macros
 
 ### Directives
 
-Directives provide you simpler and more elegant syntax for  writing templates. By default, there is not directive activated in your View. You need to add them to your View instance with ``setDirectives()`` method. The downside of directives is that View must run them after rendering a template, adding an extra compilation step. The more directives you have, the more it take times to render the view . Of course, this side effect can be mitigated with a proper caching solution, but to keep things simple, Peak View doesn't provide one by default.
+Directives provide you a simpler and more elegant syntax for  writing templates. By default, there is not directive activated in your View. You need to add them to your View instance with ``setDirectives()`` method. The downside of directives is that View must run them after rendering a template, adding an extra compilation step. The more directives you have, the more it take times to render the view . Of course, this side effect can be mitigated with a proper caching solution, but to keep things simple, Peak View doesn't provide one by default.
 
 ```php
 $view->setDirectives([
