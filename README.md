@@ -158,3 +158,5 @@ template.php
 ```
 
 It is important to keep in mind that PHP is executed first in your template and directives are compiled/rendered after that. 
+
+You can also write you own directive by using ```DirectiveInterface```.
