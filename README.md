@@ -1,5 +1,8 @@
 # <img src="https://raw.githubusercontent.com/peakphp/art/master/logo-clean-50x50.png" alt="Peak"> Peak/View
 
+<a href="https://packagist.org/packages/peak/view"><img src="https://poser.pugx.org/peak/view/version" alt="version"></a>
+<a href="https://github.com/peakphp/view/blob/master/LICENSE.md"><img src="https://poser.pugx.org/peak/view/license" alt="License"></a>
+
 Fast and minimalist view template engine with macro, helpers and directives.
 
 ## Installation
