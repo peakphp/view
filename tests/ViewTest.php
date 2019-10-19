@@ -180,7 +180,7 @@ class ViewTest extends TestCase
             ]);
 
         $content = $view->render();
-        echo $content;
+//        echo $content;
         $this->assertTrue($content === '<h1>Directives</h1><h2>foo</h2><h3>1</h3><h4>'.date('Y').'</h4><h5>Hello you!</h5>');
     }
 }
