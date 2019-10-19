@@ -1,0 +1,1 @@
+<h1>child2 of <?= $this->name ?> and <?= $this->secondName ?></h1>

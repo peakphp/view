@@ -1,0 +1,1 @@
+<h1>Directives</h1><h2>{{ $name }}</h2><h3>{{ $profile.email }}</h3>

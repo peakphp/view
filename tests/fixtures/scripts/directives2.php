@@ -1,0 +1,1 @@
+<h1>Directives</h1><h2>{{ $name }}</h2><h3>@count($profile)</h3><h4>@date(Y)</h4><h5>@testHelper(you)</h5>@date(l \t\h\e jS)

@@ -1,0 +1,1 @@
+<h1>child1 of <?= $this->name ?></h1>
