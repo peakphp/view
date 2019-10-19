@@ -147,7 +147,7 @@ template.php
 <h1>Hello {{ $name }}</h1>
 
 <p>You can call native php function with @</p>
-<h4>@date(l \t\h\e jS) - You have @count($name) message(s)</h4>
+<h4>@date(l \t\h\e jS) - You have @count($messages) message(s)</h4>
 
 <p>You can also call helpers and macros too</p>
 <p>@escape($name)</p>
