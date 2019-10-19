@@ -152,7 +152,7 @@ template.php
 <p>You can also call helpers and macros too</p>
 <p>@escape($name)</p>
 
-<p>And you can still use directly PHP like this: <?= $this->name; ?></p>
+<p>You can still use directly PHP like this: <?= $this->name; ?></p>
 
 <p>And finally, array variable can be accessed with DotNotation syntax: {{ $items.property }}</p>
 ```
