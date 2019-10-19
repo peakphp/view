@@ -4,6 +4,8 @@ Fast and minimalist view template engine with macro, helpers and directives.
 
 ## Installation
 
+This is a standalone packages and it is not provided automatically with ``peak/framework``
+
 ```
 $ composer require peak/view
 ```
@@ -77,11 +79,11 @@ and in your template view:
 ```
 
 ### Helpers
-An helper is a standalone object instance. You map a method from your helper to the view. In contrary of macro, helper do not have access to view properties/methods directly but tend to be more maintainable and secure than macro. Helper are ideal for advanced task and can benefit from dependencies injection.
+An helper is a standalone object instance that is ``callable``. In contrary of macro, helper do not have access to view properties/methods directly but tend to be more maintainable and secure than macro. Helper are ideal for advanced task and can benefit from dependencies injection.
 
 Example of an helper class:
 ```php
-class TextUtil
+class EscapeTextHelper
 {
     public function __invoke($text)
     {
@@ -93,7 +95,7 @@ class TextUtil
 Before you can use it, you'll need to give a function name to your view helper:
 ```php
 $view->setHelpers([
-    'escape' => new TextUtil(),
+    'escape' => new EscapeTextHelper(),
     // ...
 ]);
 ```
