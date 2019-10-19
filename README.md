@@ -10,7 +10,7 @@ This is a standalone packages and it is not provided automatically with ``peak/f
 $ composer require peak/view
 ```
 
-### Create a view
+## Basic usage
 
 A view need at least 2 things:
 
@@ -55,8 +55,6 @@ script example (represented by ```$this->layoutContent``` in your layout):
 </div>
 ```
 
-
-
 ### Render a view
 
 ```php
@@ -77,7 +75,7 @@ $presentation = new Presentation([
 ]);
 ```
 
-### Macros
+## Macros
 Macro are closure that will be bind to your view class instance. They have access to all class properties/methods so they must be used carefully. Macro are ideal for small task. 
 
 ```php
@@ -92,7 +90,7 @@ and in your template view:
 <h1>Hello <?= $this->formatedName() ?></h1>
 ```
 
-### Helpers
+## Helpers
 An helper is a standalone object instance that is ``callable``. In contrary of macro, helper do not have access to view properties/methods directly but tend to be more maintainable and secure than macro. Helper are ideal for advanced task and can benefit from dependencies injection.
 
 Example of an helper class:
@@ -120,7 +118,7 @@ and finally, you'll be able to use your helper the same way you use macros
 <h1>Hello <?= $this->escape($this->name) ?></h1>
 ```
 
-### Directives
+## Directives
 
 Directives provide you a simpler and more elegant syntax for  writing templates. By default, there is not directive activated in your View. You need to add them to your View instance with ``setDirectives()`` method. The downside of directives is that View must run them after rendering a template, adding an extra compilation step. The more directives you have, the more it take times to render the view . Of course, this side effect can be mitigated with a proper caching solution, but to keep things simple, Peak View doesn't provide one by default.
 
