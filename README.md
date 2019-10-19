@@ -63,6 +63,20 @@ script example (represented by ```$this->layoutContent``` in your layout):
 $output = $view->render();
 ```
 
+### Create a complex Presentation 
+
+```php
+$presentation = new Presentation([
+    '/layout1.php' => [
+        '/view1.php',
+        '/layout2,php' => [
+            '/view2.php',
+            '/view3.php',
+        ]
+    ]
+]);
+```
+
 ### Macros
 Macro are closure that will be bind to your view class instance. They have access to all class properties/methods so they must be used carefully. Macro are ideal for small task. 
 
@@ -146,17 +160,3 @@ template.php
 ```
 
 It is important to keep in mind that PHP is executed first in your template and directives are compiled/rendered after that. 
-
-### Create a complex Presentation 
-
-```php
-$presentation = new Presentation([
-    '/layout1.php' => [
-        '/view1.php',
-        '/layout2,php' => [
-            '/view2.php',
-            '/view3.php',
-        ]
-    ]
-]);
-```
