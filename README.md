@@ -61,7 +61,7 @@ script example (represented by ```$this->layoutContent``` in your layout):
 $output = $view->render();
 ```
 
-### Add a macro
+### Macros
 Macro are closure that will be bind to your view class instance. They have access to all class properties/methods so they must be used carefully. Macro are ideal for small task. 
 
 ```php
@@ -76,24 +76,25 @@ and in your template view:
 <h1>Hello <?= $this->formatedName() ?></h1>
 ```
 
-### Add an helper
-An helper is a standalone object instance. You map a method from your helper to the view. In contrary of macro, helper do not have access to view properties/methods directly and tend to be more maintainable and secure than macro. Helper are ideal for advanced task and can benefit from dependencies injection.
+### Helpers
+An helper is a standalone object instance. You map a method from your helper to the view. In contrary of macro, helper do not have access to view properties/methods directly but tend to be more maintainable and secure than macro. Helper are ideal for advanced task and can benefit from dependencies injection.
 
 Example of an helper class:
 ```php
 class TextUtil
 {
-    public function escape($text)
+    public function __invoke($text)
     {
         return filter_var($text, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 }
 ```
 
-Before you can use it, you'll need to expose ``escape`` method your view helpers:
+Before you can use it, you'll need to give a function name to your view helper:
 ```php
 $view->setHelpers([
     'escape' => new TextUtil(),
+    // ...
 ]);
 ```
 
@@ -103,17 +104,49 @@ and finally, you'll be able to use your helper the same way you use macros
 <h1>Hello <?= $this->escape($this->name) ?></h1>
 ```
 
+### Directives
 
-Tips: You can also add multiple methods from a single instance:
+Directives provide you simpler and more elegant syntax for  writing templates. By default, there is not directive activated in your View. You need to add them to your View instance with ``setDirectives()`` method. The downside of directives is that View must run them after rendering a template, adding an extra compilation step. The more directives you have, the more it take times to render the view . Of course, this side effect can be mitigated with a proper caching solution, but to keep things simple, Peak View doesn't provide one by default.
+
 ```php
-$textUtil = new TextUtil();
-$view->setHelpers([
-    'espace' => $textUtil,
-    'myMethod2' => $textUtil,
+$view->setDirectives([
+    // give you ability to print variable with syntax {{ $myVar }}
+    new EchoDirective(), 
+    // give you ability to call native php functions, 
+    // macros or helpers with syntax @function(...args)
+    new FnDirective(),  
+]);
+
+$view->addVars([
+    'name' => 'bob'
+    'messages' => [
+        // ...
+    ],
+    'items' => [
+        'property' => 'value'
+    ]
 ]);
 ```
 
+template.php
+```html
+<h1>Hello {{ $name }}</h1>
+
+<p>You can call native php function with @</p>
+<h4>@date(l \t\h\e jS) - You have @count($name) message(s)</h4>
+
+<p>You can also call helpers and macros too</p>
+<p>@escape($name)</p>
+
+<p>And you can still use directly PHP like this: <?= $this->name; ?></p>
+
+<p>And finally, array variable can be accessed with DotNotation syntax: {{ $items.property }}</p>
+```
+
+It is important to keep in mind that PHP is executed first in your template and directives are compiled/rendered after that. 
+
 ### Create a complex Presentation 
+
 ```php
 $presentation = new Presentation([
     '/layout1.php' => [
