@@ -137,8 +137,8 @@ class ViewBuilder
 
     /**
      * @return View
-     * @throws \Peak\View\Exception\InvalidHelperException
-     * @throws \Exception
+     * @throws Exception\InvalidHelperException
+     * @throws Exception\InvalidHelperException
      */
     public function build(): View
     {
@@ -168,8 +168,8 @@ class ViewBuilder
 
     /**
      * @return false|string
-     * @throws \Peak\View\Exception\FileNotFoundException
-     * @throws \Peak\View\Exception\InvalidHelperException
+     * @throws Exception\InvalidHelperException
+     * @throws Exception\RenderException
      */
     public function render()
     {
