@@ -27,6 +27,13 @@ interface ViewInterface
     public function render();
 
     /**
+     * @param string $path
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getVar(string $path, $default = null);
+
+    /**
      * @return array
      */
     public function getVars(): array;
