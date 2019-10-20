@@ -15,6 +15,7 @@ class ViewBuilderTest extends TestCase
         $viewBuilder
             ->setPresentation($this->createMock(PresentationInterface::class))
             ->setVars(['foo' => 'bar'])
+            ->addVars(['bar' => 'foo'])
             ->setMacro('macro1', function() {
                 return 'Hello';
             })

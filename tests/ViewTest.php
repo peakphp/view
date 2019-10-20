@@ -53,6 +53,13 @@ class ViewTest extends TestCase
         $this->assertFalse(isset($view->test2));
     }
 
+    public function testGetVar()
+    {
+        $view = new View(['array1' => ['key' => 'value']], $this->createMock(PresentationInterface::class));
+        $this->assertTrue($view->getVar('array1.key') === 'value');
+        $this->assertTrue($view->getVar('unknowvar', 'defaultVal') === 'defaultVal');
+    }
+
     public function testAddMacro()
     {
         $view = new View(['name' => 'foobar'], $this->createMock(PresentationInterface::class));
@@ -108,6 +115,13 @@ class ViewTest extends TestCase
         $this->assertTrue($content === '<h1>Profile of foo</h1>');
     }
 
+    public function testMacroException()
+    {
+        $this->expectException(\RuntimeException::class);
+        $view = new View();
+        $view->callMacro('test', []);
+    }
+
     public function testRenderFail()
     {
         $this->expectException(\Peak\View\Exception\RenderException::class);
@@ -142,45 +156,5 @@ class ViewTest extends TestCase
         );
         $content = $view->render();
         $this->assertTrue($content === '<div class="content"><h1>Profile of foo</h1><h1>child1 of foo</h1><h1>child2 of foo and bob</h1><h1>orphan1 of foobar</h1></div>');
-    }
-
-    public function testRenderWithDirectives1()
-    {
-        $view = new View([
-            'name' => 'foo',
-            'profile' => [
-                'email' => 'bar@bar.foo'
-            ]
-        ], new Presentation(['/directives1.php'], FIXTURES_PATH.'/scripts'));
-
-        $view->setDirectives([
-            new \Peak\View\Directive\EchoDirective()
-        ]);
-
-        $content = $view->render();
-        $this->assertTrue($content === '<h1>Directives</h1><h2>foo</h2><h3>bar@bar.foo</h3>');
-    }
-
-    public function testRenderWithDirectives2()
-    {
-        $view = new View([
-            'name' => 'foo',
-            'profile' => [
-                'email' => 'bar@bar.foo'
-            ]
-        ], new Presentation(['/directives2.php'], FIXTURES_PATH.'/scripts'));
-
-        $view
-            ->setHelpers([
-                'testHelper' => new ViewHelperA(),
-            ])
-            ->setDirectives([
-                new \Peak\View\Directive\EchoDirective(),
-                new \Peak\View\Directive\FnDirective()
-            ]);
-
-        $content = $view->render();
-//        echo $content;
-        $this->assertTrue($content === '<h1>Directives</h1><h2>foo</h2><h3>1</h3><h4>'.date('Y').'</h4><h5>Hello you!</h5>');
     }
 }

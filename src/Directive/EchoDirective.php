@@ -12,8 +12,8 @@ class EchoDirective implements DirectiveInterface
      * Echo variables
      *
      * Syntax:
-     *  for single var: {{ $var }} (php equivalent: $this->$var)
-     *  for array var: {{ $var.subkey }} (php equivalent: $this->$var['subkey'])
+     *  for single var: {{ $var }} (php equivalent: echo $this->$var)
+     *  for array var: {{ $var.subkey }} (php equivalent: echo $this->$var['subkey'])
      *
      * @param ViewInterface $view
      * @param string $content
@@ -24,6 +24,7 @@ class EchoDirective implements DirectiveInterface
         $pattern = '/(@)?{{\s*\$(.+?)\s*}}(\r?\n)?/s';
 
         $callback = function ($matches) use ($view) {
+            // this will ignore interpolation when preceding with @ (ex: @{{ $name }} will output {{ $name }})
             if ($matches[1] === '@') {
                 return substr($matches[0],1);
             }

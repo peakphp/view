@@ -15,6 +15,10 @@ class FnDirective implements DirectiveInterface
      *  without params: @baseUrl() (php equivalent: $this->baseUrl())
      *  without args: @baseUrl($name) (php equivalent: $this->baseUrl($this->name))
      *
+     * About argument:
+     *  string must be surrounded by single quotes or double quotes
+     *  ex: @function(3.14, 'bob', $email, "Mr.")
+     *
      * @param ViewInterface $view
      * @param string $content
      * @return string|string[]|null
@@ -26,31 +30,63 @@ class FnDirective implements DirectiveInterface
         $callback = function ($matches) use ($view) {
 
             if (empty($matches[0])) {
-                return;
+                return null;
             }
 
             $fn = $matches[2];
-            $argsArray = [];
-            $isNative = !($view->hasMacro($fn) || $view->hasHelper($fn) || method_exists($view, $fn));
+            $args = [];
 
             if (isset($matches[3])) {
-                $args = $matches[3];
-                $argsArray = explode(',', $args);
-                foreach ($argsArray as $i => $arg) {
-                    if (substr($arg, 0, 1) === '$') {
-                        $varName = substr($arg, 1, strlen($arg));
-                        $argsArray[$i] = $view->getVar($varName);
-                    }
-                }
+                $args = $this->parseParameters($view, $matches[3]);
             }
 
-            if ($isNative) {
-                return call_user_func_array($fn, $argsArray);
+            // check if function is a native php function or view helper/macro/method
+            if (($view->hasMacro($fn) || $view->hasHelper($fn) || method_exists($view, $fn))) {
+                return call_user_func_array([$view, $fn], $args);
             } else {
-                return call_user_func_array([$view, $fn], $argsArray);
+                return call_user_func_array($fn, $args);
+
             }
         };
 
         return preg_replace_callback($pattern, $callback, $content);
+    }
+
+    /**
+     * @param ViewInterface $view
+     * @param string $argsString
+     * @return array
+     */
+    protected function parseParameters(ViewInterface $view, string $argsString): array
+    {
+        $args = [];
+        $pattern = '/"([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\'|\$[a-zA-Z0-9_.]+|[0-9.]+|[0-9]+/';
+
+        // 1. look for quote string (single and double quote) and take into account escaped quotes
+        // 2. look for view variable ($var)
+        // 3. look for number (int and float)
+        preg_match_all($pattern, $argsString, $matches, PREG_SET_ORDER, 0);
+
+        // cleanup matches and prepare arguments real values
+        foreach ($matches as $arg) {
+            if (count($arg) == 1) {
+                $args[] = (substr($arg[0], 0,1) === '$')
+                    ? $view->getVar(substr($arg[0], 1))
+                    : $arg[0];
+            } else {
+                $i = 1;
+                foreach ($arg as $argVariation) {
+                    if (!empty($argVariation)) {
+                        if ($i == 2) {
+                            $args[] = $argVariation;
+                            break;
+                        }
+                        ++$i;
+                    }
+                }
+            }
+        }
+
+        return $args;
     }
 }

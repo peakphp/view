@@ -289,23 +289,21 @@ class View implements ViewInterface
      * @param string $filename
      * @param array $vars
      * @return false|string
+     * @throws RenderException
      */
     public function renderOrphan(string $filename, array $vars = [])
     {
         $view = clone $this;
         $view->setVars($vars);
-        try {
-            $view->setPresentation(new SinglePresentation($filename));
-            return $view->render();
-        } catch(RenderException $e) {
-            return $e->getMessage();
-        }
+        $view->setPresentation(new SinglePresentation($filename));
+        return $view->render();
     }
 
     /**
      * @param array $filenames
      * @param array $vars
      * @return string
+     * @throws RenderException
      */
     public function renderOrphans(array $filenames, array $vars = [])
     {
