@@ -68,7 +68,7 @@ class DirectivesTest extends TestCase
             ]);
 
         $content = $view->render();
-        echo $content;
+//        echo $content;
         $this->assertTrue($content === '<h1>Hello</h1>ok');
 
     }
