@@ -31,6 +31,11 @@ class ViewBuilder
     protected $helpers = [];
 
     /**
+     * @var array
+     */
+    protected $directives = [];
+
+    /**
      * @var HelperResolver|null
      */
     protected $helperResolver;
@@ -87,6 +92,16 @@ class ViewBuilder
     public function setHelpers(array $helpers)
     {
         $this->helpers = $helpers;
+        return $this;
+    }
+
+    /**
+     * @param array $directives
+     * @return $this
+     */
+    public function setDirectives(array $directives)
+    {
+        $this->directives = $directives;
         return $this;
     }
 
@@ -162,6 +177,8 @@ class ViewBuilder
         foreach ($this->macros as $macroName => $macro) {
             $view->setMacro($macroName, $macro);
         }
+
+        $view->setDirectives($this->directives);
 
         return $view;
     }
