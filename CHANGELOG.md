@@ -1,6 +1,6 @@
 VERSION 1.1.0
 -------------
-Release date: ?
+Release date: 2020-04-30
 
  - added View\Helper\Text\Truncate
  - removed Peak\Common dependency for marcos in View
