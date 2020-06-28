@@ -5,9 +5,14 @@
 
 Fast and minimalist view template engine with macro, helpers and directives.
 
+## ! Deprecated
+
+This package is mark as deprecated! It may receive bug fixes if needed but that's it. 
+I strongly encourage users to switch to a modern JS front framework instead of using PHP as templating engine. 
+
 ## Installation
 
-This is a standalone packages and it is not provided automatically with ``peak/framework``
+This is a standalone package and not provided automatically with ``peak/framework``
 
 ```
 $ composer require peak/view
@@ -26,7 +31,7 @@ $presentation = new SingleLayoutPresentation(
     '/path/to/view1.php'
 );
 $data = [
-    'title' => 'FooTheBar'
+    'title' => 'FooTheBar',
     'name' => 'JohnDoe'
 ];
 $view = new View($data, $presentation);
